@@ -4,12 +4,19 @@ import { getAuth } from 'firebase-admin/auth';
 import { onRequest } from 'firebase-functions/v2/https';
 import { getApps, cert } from 'firebase-admin/app';
 
-const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
+const serviceAccount = {
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+  // Private key harus di-replace newline-nya dari literal "\n" jadi actual newline
+  privateKey: process.env.FIREBASE_PRIVATE_KEY
+    ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n')
+    : undefined,
+};
 
 if (!getApps().length) {
   initializeApp({
     credential: cert(serviceAccount),
-    databaseURL: "https://YOUR_PROJECT.firebaseio.com"
+    databaseURL: process.env.FIREBASE_DATABASE_URL,
   });
 }
 
